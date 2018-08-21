@@ -7,21 +7,33 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.server.*;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
+import static org.springframework.web.reactive.function.server.RouterFunctions.route;
+import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 
 @SpringBootApplication
 public class ReservationServiceApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(ReservationServiceApplication.class, args);
     }
+
+    @Bean
+    RouterFunction<ServerResponse> routes(ReservationRepository rr) {
+        return route(GET("/reactive/reservations"), serverRequest -> ok().body(rr.findAll(), Reservation.class));
+    }
 }
+
 
 @RestController
 class ReservationRestController {
