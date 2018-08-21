@@ -11,6 +11,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
 @SpringBootApplication
@@ -20,10 +22,26 @@ public class ReservationServiceApplication {
         SpringApplication.run(ReservationServiceApplication.class, args);
     }
 }
+
+@RestController
+class ReservationRestController {
+
+    private ReservationRepository rr;
+
+    public ReservationRestController(ReservationRepository rr) {
+        this.rr = rr;
+    }
+
+    @GetMapping("/reservations")
+    Flux<Reservation> reservationFlux() {
+        return this.rr.findAll();
+    }
+}
+
 @Component
 class DataWriter implements ApplicationRunner {
 
-    ReservationRepository reservationRepository;
+    private ReservationRepository reservationRepository;
 
     public DataWriter(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
